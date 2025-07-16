@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Biocann - Cultivo</title>
+    <meta name="description" content="Portal de acceso a módulos y formularios de Biocann Cultivo">
+    
+    <!-- PWA Meta Tags -->
+    <meta name="theme-color" content="#000000">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Biocann Cultivo">
+    
+    <!-- PWA Icons -->
+    <link rel="icon" type="image/png" sizes="32x32" href="icons/icon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="icons/icon-16x16.png">
+    <link rel="apple-touch-icon" href="icons/icon-192x192.png">
+    
+    <!-- Manifest -->
+    <link rel="manifest" href="manifest.json">
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="app-header">
+            <div class="logo-container">
+                <img src="logo.png" alt="Biocann Logo" class="logo">
+                <h1 class="app-title">Biocann - Cultivo</h1>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="portal-grid">
+                <!-- Módulos principales -->
+                <div class="portal-section">
+                    <h2 class="section-title">Módulos Principales</h2>
+                    <div class="button-grid">
+                        <button class="portal-button" data-link="https://forms.google.com/ejemplo1">
+                            <span class="button-icon">📊</span>
+                            <span class="button-text">Inventario</span>
+                        </button>
+                        <button class="portal-button" data-link="https://forms.google.com/ejemplo2">
+                            <span class="button-icon">🌱</span>
+                            <span class="button-text">Cultivo</span>
+                        </button>
+                        <button class="portal-button" data-link="https://forms.google.com/ejemplo3">
+                            <span class="button-icon">🔬</span>
+                            <span class="button-text">Laboratorio</span>
+                        </button>
+                        <button class="portal-button" data-link="https://forms.google.com/ejemplo4">
+                            <span class="button-icon">📈</span>
+                            <span class="button-text">Reportes</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Formularios rápidos -->
+                <div class="portal-section">
+                    <h2 class="section-title">Formularios Rápidos</h2>
+                    <div class="button-grid">
+                        <button class="portal-button secondary" data-link="https://forms.google.com/rapido1">
+                            <span class="button-icon">⚡</span>
+                            <span class="button-text">Registro Diario</span>
+                        </button>
+                        <button class="portal-button secondary" data-link="https://forms.google.com/rapido2">
+                            <span class="button-icon">📝</span>
+                            <span class="button-text">Incidencias</span>
+                        </button>
+                        <button class="portal-button secondary" data-link="https://forms.google.com/rapido3">
+                            <span class="button-icon">🔧</span>
+                            <span class="button-text">Mantenimiento</span>
+                        </button>
+                        <button class="portal-button secondary" data-link="https://forms.google.com/rapido4">
+                            <span class="button-icon">📋</span>
+                            <span class="button-text">Checklist</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="app-footer">
+            <p>&copy; 2024 Biocann - Cultivo. Todos los derechos reservados.</p>
+        </footer>
+    </div>
+
+    <!-- Scripts -->
+    <script src="app.js"></script>
+    <script src="sw-register.js"></script>
+</body>
+</html> 
