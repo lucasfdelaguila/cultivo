@@ -2,7 +2,7 @@
 const BIOCANN_CONFIG = {
     // URLs de formularios
     forms: {
-        registrarEvento: 'https://forms.google.com/TU_FORMULARIO_AQUI', // Reemplazar con tu URL real
+        registrarEvento: 'https://docs.google.com/forms/d/e/1FAIpQLSfe6hrLISqkk_gERxCubZ3DDlG0mg1zduODl8aewEeqrHB4ow/viewform',
         // Agregar más formularios aquí cuando sea necesario
     },
     
