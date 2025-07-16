@@ -36,6 +36,19 @@ class BiocannPortal {
             });
         }
 
+        // Detectar si el iframe falla
+        const iframe = document.getElementById('google-form-iframe');
+        if (iframe) {
+            iframe.addEventListener('load', () => {
+                console.log('✅ Iframe cargado exitosamente');
+            });
+            
+            iframe.addEventListener('error', () => {
+                console.log('❌ Error al cargar iframe, mostrando fallback');
+                this.showFormFallback();
+            });
+        }
+
         // Detectar cambios de conectividad
         window.addEventListener('online', () => this.handleOnline());
         window.addEventListener('offline', () => this.handleOffline());
@@ -52,8 +65,9 @@ class BiocannPortal {
         // URL del formulario de Google desde la configuración
         const googleFormUrl = window.BIOCANN_CONFIG?.forms?.registrarEvento || 'https://forms.google.com/TU_FORMULARIO_AQUI';
         
-        // Configurar el iframe
-        iframe.src = googleFormUrl;
+        // Configurar el iframe con parámetros para mejor compatibilidad
+        const enhancedUrl = googleFormUrl + '?embedded=true';
+        iframe.src = enhancedUrl;
         
         // Transición suave
         dashboardView.classList.add('fade-out');
@@ -86,6 +100,16 @@ class BiocannPortal {
         }, 300);
         
         console.log('🏠 Volviendo al dashboard');
+    }
+
+    showFormFallback() {
+        const iframe = document.getElementById('google-form-iframe');
+        const fallback = document.getElementById('form-fallback');
+        
+        if (iframe && fallback) {
+            iframe.style.display = 'none';
+            fallback.style.display = 'block';
+        }
     }
 
     addClickEffect(button) {

@@ -62,8 +62,16 @@
                             src="" 
                             frameborder="0" 
                             width="100%" 
-                            height="600px">
+                            height="600px"
+                            allow="camera; microphone; geolocation">
                     </iframe>
+                    <div id="form-fallback" style="display: none; text-align: center; padding: 2rem;">
+                        <p style="margin-bottom: 1rem; color: #888888;">El formulario no se puede mostrar directamente en la app.</p>
+                        <button class="portal-button" onclick="window.open(window.BIOCANN_CONFIG?.forms?.registrarEvento, '_blank')">
+                            <span class="button-icon">🔗</span>
+                            <span class="button-text">Abrir Formulario en Nueva Pestaña</span>
+                        </button>
+                    </div>
                 </div>
             </div>
         </main>
