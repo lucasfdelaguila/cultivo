@@ -12,17 +12,29 @@ class BiocannPortal {
     }
 
     setupEventListeners() {
-        // Botones del portal
-        const portalButtons = document.querySelectorAll('.portal-button');
-        portalButtons.forEach(button => {
-            button.addEventListener('click', (e) => this.handleButtonClick(e));
-            button.addEventListener('keypress', (e) => {
+        // Botón de registrar evento
+        const registrarEventoBtn = document.getElementById('registrar-evento-btn');
+        if (registrarEventoBtn) {
+            registrarEventoBtn.addEventListener('click', () => this.showForm());
+            registrarEventoBtn.addEventListener('keypress', (e) => {
                 if (e.key === 'Enter' || e.key === ' ') {
                     e.preventDefault();
-                    this.handleButtonClick(e);
+                    this.showForm();
                 }
             });
-        });
+        }
+
+        // Botón de volver al dashboard
+        const backToDashboardBtn = document.getElementById('back-to-dashboard');
+        if (backToDashboardBtn) {
+            backToDashboardBtn.addEventListener('click', () => this.showDashboard());
+            backToDashboardBtn.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    this.showDashboard();
+                }
+            });
+        }
 
         // Detectar cambios de conectividad
         window.addEventListener('online', () => this.handleOnline());
@@ -32,20 +44,48 @@ class BiocannPortal {
         window.addEventListener('appinstalled', () => this.handleAppInstalled());
     }
 
-    handleButtonClick(event) {
-        const button = event.currentTarget;
-        const link = button.dataset.link;
+    showForm() {
+        const dashboardView = document.getElementById('dashboard-view');
+        const formView = document.getElementById('form-view');
+        const iframe = document.getElementById('google-form-iframe');
         
-        if (!link) {
-            console.error('No se encontró enlace para el botón:', button);
-            return;
-        }
+        // URL del formulario de Google desde la configuración
+        const googleFormUrl = window.BIOCANN_CONFIG?.forms?.registrarEvento || 'https://forms.google.com/TU_FORMULARIO_AQUI';
+        
+        // Configurar el iframe
+        iframe.src = googleFormUrl;
+        
+        // Transición suave
+        dashboardView.classList.add('fade-out');
+        
+        setTimeout(() => {
+            dashboardView.style.display = 'none';
+            formView.style.display = 'block';
+            formView.classList.add('fade-in');
+        }, 300);
+        
+        console.log('📝 Mostrando formulario de registro de evento');
+    }
 
-        // Efecto visual de clic
-        this.addClickEffect(button);
-
-        // Abrir enlace
-        this.openLink(link);
+    showDashboard() {
+        const dashboardView = document.getElementById('dashboard-view');
+        const formView = document.getElementById('form-view');
+        const iframe = document.getElementById('google-form-iframe');
+        
+        // Limpiar el iframe
+        iframe.src = '';
+        
+        // Transición suave
+        formView.classList.remove('fade-in');
+        formView.classList.add('fade-out');
+        
+        setTimeout(() => {
+            formView.style.display = 'none';
+            dashboardView.style.display = 'block';
+            dashboardView.classList.remove('fade-out');
+        }, 300);
+        
+        console.log('🏠 Volviendo al dashboard');
     }
 
     addClickEffect(button) {
