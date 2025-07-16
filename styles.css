@@ -358,6 +358,58 @@ body {
     transition: transform 0.1s ease;
 }
 
+/* Notificación de formulario */
+.form-notification {
+    position: fixed;
+    top: 2rem;
+    right: 2rem;
+    background-color: #111111;
+    border: 1px solid #333333;
+    border-radius: 12px;
+    padding: 1rem;
+    z-index: 1000;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+    animation: slideIn 0.3s ease-out;
+    max-width: 300px;
+}
+
+.notification-content {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.notification-icon {
+    font-size: 1.2rem;
+}
+
+.notification-text {
+    font-weight: 500;
+    color: #ffffff;
+    flex: 1;
+}
+
+.notification-close {
+    background: none;
+    border: none;
+    color: #888888;
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: 0;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+}
+
+.notification-close:hover {
+    background-color: #333333;
+    color: #ffffff;
+}
+
 /* Estilos para el formulario integrado */
 .form-container {
     width: 100%;

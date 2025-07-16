@@ -24,30 +24,7 @@ class BiocannPortal {
             });
         }
 
-        // Botón de volver al dashboard
-        const backToDashboardBtn = document.getElementById('back-to-dashboard');
-        if (backToDashboardBtn) {
-            backToDashboardBtn.addEventListener('click', () => this.showDashboard());
-            backToDashboardBtn.addEventListener('keypress', (e) => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault();
-                    this.showDashboard();
-                }
-            });
-        }
 
-        // Detectar si el iframe falla
-        const iframe = document.getElementById('google-form-iframe');
-        if (iframe) {
-            iframe.addEventListener('load', () => {
-                console.log('✅ Iframe cargado exitosamente');
-            });
-            
-            iframe.addEventListener('error', () => {
-                console.log('❌ Error al cargar iframe, mostrando fallback');
-                this.showFormFallback();
-            });
-        }
 
         // Detectar cambios de conectividad
         window.addEventListener('online', () => this.handleOnline());
@@ -58,59 +35,41 @@ class BiocannPortal {
     }
 
     showForm() {
-        const dashboardView = document.getElementById('dashboard-view');
-        const formView = document.getElementById('form-view');
-        const iframe = document.getElementById('google-form-iframe');
-        
         // URL del formulario de Google desde la configuración
         const googleFormUrl = window.BIOCANN_CONFIG?.forms?.registrarEvento || 'https://forms.google.com/TU_FORMULARIO_AQUI';
         
-        // Configurar el iframe con parámetros para mejor compatibilidad
-        const enhancedUrl = googleFormUrl + '?embedded=true';
-        iframe.src = enhancedUrl;
+        // Abrir formulario en nueva pestaña
+        window.open(googleFormUrl, '_blank', 'noopener,noreferrer');
         
-        // Transición suave
-        dashboardView.classList.add('fade-out');
+        // Mostrar mensaje de confirmación
+        this.showFormNotification();
         
-        setTimeout(() => {
-            dashboardView.style.display = 'none';
-            formView.style.display = 'block';
-            formView.classList.add('fade-in');
-        }, 300);
-        
-        console.log('📝 Mostrando formulario de registro de evento');
+        console.log('📝 Abriendo formulario de registro de evento en nueva pestaña');
     }
 
-    showDashboard() {
-        const dashboardView = document.getElementById('dashboard-view');
-        const formView = document.getElementById('form-view');
-        const iframe = document.getElementById('google-form-iframe');
+    showFormNotification() {
+        // Crear notificación temporal
+        const notification = document.createElement('div');
+        notification.className = 'form-notification';
+        notification.innerHTML = `
+            <div class="notification-content">
+                <span class="notification-icon">📝</span>
+                <span class="notification-text">Formulario abierto en nueva pestaña</span>
+                <button class="notification-close" onclick="this.parentElement.parentElement.remove()">×</button>
+            </div>
+        `;
         
-        // Limpiar el iframe
-        iframe.src = '';
+        document.body.appendChild(notification);
         
-        // Transición suave
-        formView.classList.remove('fade-in');
-        formView.classList.add('fade-out');
-        
+        // Auto-remover después de 5 segundos
         setTimeout(() => {
-            formView.style.display = 'none';
-            dashboardView.style.display = 'block';
-            dashboardView.classList.remove('fade-out');
-        }, 300);
-        
-        console.log('🏠 Volviendo al dashboard');
+            if (notification.parentNode) {
+                notification.remove();
+            }
+        }, 5000);
     }
 
-    showFormFallback() {
-        const iframe = document.getElementById('google-form-iframe');
-        const fallback = document.getElementById('form-fallback');
-        
-        if (iframe && fallback) {
-            iframe.style.display = 'none';
-            fallback.style.display = 'block';
-        }
-    }
+
 
     addClickEffect(button) {
         button.classList.add('clicked');
