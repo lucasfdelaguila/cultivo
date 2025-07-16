@@ -1,13 +1,13 @@
 // Service Worker para Biocann - Cultivo
 const CACHE_NAME = 'biocann-cultivo-v1.0.0';
 const urlsToCache = [
-    '/',
-    '/index.html',
-    '/styles.css',
-    '/app.js',
-    '/config.js',
-    '/manifest.json',
-    '/logo.png'
+    '/cultivo/',
+    '/cultivo/index.html',
+    '/cultivo/styles.css',
+    '/cultivo/app.js',
+    '/cultivo/config.js',
+    '/cultivo/manifest.json',
+    '/cultivo/logo.png'
 ];
 
 // Instalación del Service Worker

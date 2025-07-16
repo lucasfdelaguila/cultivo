@@ -20,8 +20,8 @@ class ServiceWorkerManager {
 
     async registerServiceWorker() {
         try {
-            this.swRegistration = await navigator.serviceWorker.register('/sw.js', {
-                scope: '/'
+            this.swRegistration = await navigator.serviceWorker.register('/cultivo/sw.js', {
+                scope: '/cultivo/'
             });
 
             console.log('✅ Service Worker registrado exitosamente:', this.swRegistration);
