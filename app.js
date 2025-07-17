@@ -48,6 +48,18 @@ class BiocannPortal {
             });
         }
 
+        // Botón de inventario de herramientas
+        const inventarioHerramientasBtn = document.getElementById('inventario-herramientas-btn');
+        if (inventarioHerramientasBtn) {
+            inventarioHerramientasBtn.addEventListener('click', () => this.showForm('inventarioHerramientas'));
+            inventarioHerramientasBtn.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    this.showForm('inventarioHerramientas');
+                }
+            });
+        }
+
         // Botón de instalación manual
         const manualInstallBtn = document.getElementById('manual-install-button');
         if (manualInstallBtn) {
@@ -82,7 +94,8 @@ class BiocannPortal {
         const formNames = {
             'registrarEvento': 'Registro de Evento',
             'actividadesDiarias': 'Actividades Diarias',
-            'incidencias': 'Registro de Incidencias'
+            'incidencias': 'Registro de Incidencias',
+            'inventarioHerramientas': 'Inventario de Herramientas'
         };
         
         const formName = formNames[formType] || 'Formulario';

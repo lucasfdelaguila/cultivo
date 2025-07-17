@@ -5,6 +5,7 @@ const BIOCANN_CONFIG = {
         registrarEvento: 'https://docs.google.com/forms/d/e/1FAIpQLSfe6hrLISqkk_gERxCubZ3DDlG0mg1zduODl8aewEeqrHB4ow/viewform',
         actividadesDiarias: 'https://docs.google.com/forms/d/e/1FAIpQLSf1_bZ2M4a8T_4k8BSCYAWOlJn5CNTbgtcSLZLH9hCQ9ql5aA/viewform?usp=sharing&ouid=116634953892944823556',
         incidencias: 'https://docs.google.com/forms/d/e/1FAIpQLSfQYX6ovvs_0knd3M0FqxGY4ZqzMRMjAgRo3k82TuvIiru2oA/viewform?usp=dialog',
+        inventarioHerramientas: 'https://docs.google.com/spreadsheets/d/1qK1LW1pI1YWcZFC9ti92_nC0DpJzDkc6AszFrzw3ISI/edit?usp=sharing',
         // Agregar más formularios aquí cuando sea necesario
     },
     
