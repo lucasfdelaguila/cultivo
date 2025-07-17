@@ -1,18 +1,18 @@
 // Service Worker para Biocann - Cultivo
-const CACHE_NAME = 'biocann-cultivo-v1.0.0';
+const CACHE_NAME = 'biocann-cultivo-v1.0.1'; // Incrementar versión para forzar actualización
 const urlsToCache = [
-    '/cultivo/',
-    '/cultivo/index.html',
-    '/cultivo/styles.css',
-    '/cultivo/app.js',
-    '/cultivo/config.js',
-    '/cultivo/manifest.json',
-    '/cultivo/logo.png'
+    '/',
+    '/index.html',
+    '/styles.css',
+    '/app.js',
+    '/config.js',
+    '/manifest.json',
+    '/actividades-estados.json'
 ];
 
 // Instalación del Service Worker
 self.addEventListener('install', (event) => {
-    console.log('🔧 Instalando Service Worker...');
+    console.log('🔧 Instalando Service Worker v1.0.1...');
     event.waitUntil(
         caches.open(CACHE_NAME)
             .then((cache) => {
@@ -31,7 +31,7 @@ self.addEventListener('install', (event) => {
 
 // Activación del Service Worker
 self.addEventListener('activate', (event) => {
-    console.log('🚀 Activando Service Worker...');
+    console.log('🚀 Activando Service Worker v1.0.1...');
     event.waitUntil(
         caches.keys().then((cacheNames) => {
             return Promise.all(
@@ -58,12 +58,49 @@ self.addEventListener('fetch', (event) => {
         return;
     }
 
-    // Estrategia: Cache First para recursos estáticos
-    if (isStaticResource(request.url)) {
+    // Para archivos críticos, usar Network First para asegurar actualizaciones
+    if (isCriticalFile(request.url)) {
+        event.respondWith(
+            fetch(request)
+                .then((response) => {
+                    if (response && response.status === 200) {
+                        const responseClone = response.clone();
+                        caches.open(CACHE_NAME)
+                            .then((cache) => {
+                                cache.put(request, responseClone);
+                                console.log('📦 Actualizando cache para:', request.url);
+                            });
+                    }
+                    return response;
+                })
+                .catch(() => {
+                    console.log('📦 Fallback a cache para:', request.url);
+                    return caches.match(request);
+                })
+        );
+    }
+    // Para recursos estáticos, usar Cache First pero con verificación periódica
+    else if (isStaticResource(request.url)) {
         event.respondWith(
             caches.match(request)
                 .then((response) => {
                     if (response) {
+                        // Verificar si hay una versión más nueva en background
+                        fetch(request, { cache: 'no-cache' })
+                            .then((newResponse) => {
+                                if (newResponse && newResponse.status === 200) {
+                                    const responseClone = newResponse.clone();
+                                    caches.open(CACHE_NAME)
+                                        .then((cache) => {
+                                            cache.put(request, responseClone);
+                                            console.log('🔄 Actualización en background para:', request.url);
+                                        });
+                                }
+                            })
+                            .catch(() => {
+                                // Ignorar errores de verificación en background
+                            });
+                        
                         console.log('📦 Sirviendo desde cache:', request.url);
                         return response;
                     }
@@ -107,6 +144,13 @@ self.addEventListener('fetch', (event) => {
     }
 });
 
+// Función para identificar archivos críticos que siempre deben actualizarse
+function isCriticalFile(url) {
+    return url.includes('app.js') || 
+           url.includes('config.js') || 
+           url.includes('actividades-estados.json');
+}
+
 // Función para identificar recursos estáticos
 function isStaticResource(url) {
     const staticExtensions = ['.html', '.css', '.js', '.png', '.jpg', '.jpeg', '.gif', '.svg', '.ico', '.woff', '.woff2', '.ttf'];
@@ -128,16 +172,20 @@ self.addEventListener('message', (event) => {
     if (event.data && event.data.type === 'CHECK_UPDATE') {
         this.checkForUpdates();
     }
+
+    if (event.data && event.data.type === 'FORCE_UPDATE') {
+        this.forceUpdate();
+    }
 });
 
 // Función para verificar actualizaciones
 async function checkForUpdates() {
     try {
-        const response = await fetch('/cultivo/index.html', { cache: 'no-cache' });
+        const response = await fetch('/index.html', { cache: 'no-cache' });
         const newContent = await response.text();
         
         // Comparar con el contenido actual
-        const currentContent = await caches.match('/cultivo/index.html');
+        const currentContent = await caches.match('/index.html');
         if (currentContent) {
             const currentText = await currentContent.text();
             if (newContent !== currentText) {
@@ -151,6 +199,27 @@ async function checkForUpdates() {
         }
     } catch (error) {
         console.error('Error checking for updates:', error);
+    }
+}
+
+// Función para forzar actualización
+async function forceUpdate() {
+    try {
+        // Limpiar cache actual
+        const cacheNames = await caches.keys();
+        await Promise.all(
+            cacheNames.map(cacheName => caches.delete(cacheName))
+        );
+        
+        // Recargar todos los clientes
+        const clients = await self.clients.matchAll();
+        clients.forEach(client => {
+            client.postMessage({ type: 'FORCE_RELOAD' });
+        });
+        
+        console.log('🔄 Actualización forzada completada');
+    } catch (error) {
+        console.error('Error forcing update:', error);
     }
 }
 
