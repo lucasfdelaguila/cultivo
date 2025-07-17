@@ -668,6 +668,7 @@ class ActividadesManager {
         this.actividades = [];
         this.estados = {};
         this.isLoading = false;
+        this.localStorageKey = 'biocann_actividades_estados';
     }
 
     async loadActividades() {
@@ -677,10 +678,10 @@ class ActividadesManager {
         this.updateSyncStatus('⏳ Sincronizando...', 'loading');
         
         try {
-            // Cargar estados guardados desde GitHub
-            await this.loadEstadosFromGitHub();
+            // Cargar estados desde localStorage (cambios inmediatos)
+            this.loadEstadosFromLocalStorage();
             
-            // Cargar datos de Google Sheets
+            // Cargar datos de Google Sheets (solo tareas, no estados)
             await this.loadDataFromGoogleSheets();
             
             // Renderizar actividades
@@ -692,6 +693,9 @@ class ActividadesManager {
                 this.updateSyncStatus('', '');
             }, 3000);
             
+            // Sincronizar con GitHub en background (sin bloquear la UI)
+            this.syncWithGitHubInBackground();
+            
         } catch (error) {
             console.error('Error al cargar actividades:', error);
             this.updateSyncStatus('❌ Error al sincronizar', 'error');
@@ -701,6 +705,40 @@ class ActividadesManager {
             }, 5000);
         } finally {
             this.isLoading = false;
+        }
+    }
+
+    loadEstadosFromLocalStorage() {
+        try {
+            const storedEstados = localStorage.getItem(this.localStorageKey);
+            this.estados = storedEstados ? JSON.parse(storedEstados) : {};
+            console.log('✅ Estados cargados desde localStorage');
+        } catch (error) {
+            console.error('Error al cargar estados desde localStorage:', error);
+            this.estados = {};
+        }
+    }
+
+    saveEstadosToLocalStorage() {
+        try {
+            localStorage.setItem(this.localStorageKey, JSON.stringify(this.estados));
+            console.log('💾 Estados guardados en localStorage');
+        } catch (error) {
+            console.error('Error al guardar estados en localStorage:', error);
+        }
+    }
+
+    async syncWithGitHubInBackground() {
+        try {
+            // Cargar estados guardados desde GitHub para comparar
+            await this.loadEstadosFromGitHub();
+            
+            // Guardar estados actuales en GitHub
+            await this.saveEstadosToGitHub();
+            
+            console.log('🔄 Sincronización con GitHub completada en background');
+        } catch (error) {
+            console.error('Error en sincronización con GitHub (background):', error);
         }
     }
 
@@ -719,15 +757,16 @@ class ActividadesManager {
             if (response.ok) {
                 const data = await response.json();
                 const content = JSON.parse(atob(data.content));
-                this.estados = content.estados || {};
-                console.log('✅ Estados cargados desde GitHub');
+                // Solo usar para comparar, no sobrescribir estados locales
+                console.log('✅ Estados cargados desde GitHub (solo para comparar)');
+                return content.estados || {};
             } else {
-                console.log('⚠️ No se encontró archivo de estados, creando uno nuevo');
-                this.estados = {};
+                console.log('⚠️ No se encontró archivo de estados en GitHub');
+                return {};
             }
         } catch (error) {
             console.error('Error al cargar estados desde GitHub:', error);
-            this.estados = {};
+            return {};
         }
     }
 
@@ -767,18 +806,15 @@ class ActividadesManager {
         
         for (let i = 1; i < lines.length; i++) {
             const values = lines[i].split(',').map(v => v.replace(/"/g, '').trim());
-            if (values.length >= 3) {
+            if (values.length >= 2) { // Solo tarea y prioridad
                 const actividad = {
                     id: `actividad_${i}`,
                     tarea: values[0] || '',
-                    prioridad: parseInt(values[1]) || 999,
-                    estado: values[2] || 'Pendiente'
+                    prioridad: parseInt(values[1]) || 999
                 };
                 
-                // Usar estado guardado si existe, sino el de la hoja
-                if (this.estados[actividad.id]) {
-                    actividad.estado = this.estados[actividad.id];
-                }
+                // Asignar estado desde localStorage, o 'Pendiente' por defecto
+                actividad.estado = this.estados[actividad.id] || 'Pendiente';
                 
                 this.actividades.push(actividad);
             }
@@ -787,7 +823,7 @@ class ActividadesManager {
         // Ordenar por prioridad (1 = más importante)
         this.actividades.sort((a, b) => a.prioridad - b.prioridad);
         
-        console.log(`✅ ${this.actividades.length} actividades cargadas`);
+        console.log(`✅ ${this.actividades.length} actividades cargadas desde Google Sheets`);
     }
 
     renderActividades() {
@@ -842,10 +878,11 @@ class ActividadesManager {
 
     async updateEstado(actividadId, nuevoEstado) {
         try {
-            // Actualizar estado local
+            // Actualizar estado local inmediatamente
             this.estados[actividadId] = nuevoEstado;
+            this.saveEstadosToLocalStorage();
             
-            // Actualizar visual
+            // Actualizar visual inmediatamente
             const card = document.querySelector(`[data-id="${actividadId}"]`);
             if (card) {
                 card.className = `actividad-card ${nuevoEstado === 'Bloqueada' ? 'bloqueada' : ''}`;
@@ -856,15 +893,15 @@ class ActividadesManager {
                 }
             }
             
-            // Guardar en GitHub
-            await this.saveEstadosToGitHub();
+            console.log(`✅ Estado actualizado inmediatamente: ${actividadId} -> ${nuevoEstado}`);
             
-            console.log(`✅ Estado actualizado: ${actividadId} -> ${nuevoEstado}`);
+            // Sincronizar con GitHub en background (sin bloquear la UI)
+            setTimeout(() => {
+                this.saveEstadosToGitHub();
+            }, 1000); // Pequeño delay para no saturar la API
             
         } catch (error) {
             console.error('Error al actualizar estado:', error);
-            // Revertir cambio visual en caso de error
-            this.renderActividades();
         }
     }
 
@@ -915,14 +952,13 @@ class ActividadesManager {
             });
             
             if (updateResponse.ok) {
-                console.log('✅ Estados guardados en GitHub');
+                console.log('✅ Estados guardados en GitHub (background)');
             } else {
                 throw new Error('Error al guardar en GitHub');
             }
             
         } catch (error) {
             console.error('Error al guardar estados en GitHub:', error);
-            throw error;
         }
     }
 
