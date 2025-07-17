@@ -60,6 +60,18 @@ class BiocannPortal {
             });
         }
 
+        // Botón de sugerencias
+        const sugerenciasBtn = document.getElementById('sugerencias-btn');
+        if (sugerenciasBtn) {
+            sugerenciasBtn.addEventListener('click', () => this.showForm('sugerencias'));
+            sugerenciasBtn.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    this.showForm('sugerencias');
+                }
+            });
+        }
+
         // Botón de instalación manual
         const manualInstallBtn = document.getElementById('manual-install-button');
         if (manualInstallBtn) {
@@ -95,7 +107,8 @@ class BiocannPortal {
             'registrarEvento': 'Registro de Evento',
             'actividadesDiarias': 'Actividades Diarias',
             'incidencias': 'Registro de Incidencias',
-            'inventarioHerramientas': 'Inventario de Herramientas'
+            'inventarioHerramientas': 'Inventario de Herramientas',
+            'sugerencias': 'Sugerencias'
         };
         
         const formName = formNames[formType] || 'Formulario';
