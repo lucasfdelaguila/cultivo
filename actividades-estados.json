@@ -1,11 +1,12 @@
 {
-  "lastUpdate": "2025-07-17T15:05:32.437Z",
+  "lastUpdate": "2025-07-17T15:05:46.892Z",
   "estados": {
-    "actividad_8": "Completada"
+    "actividad_8": "Completada",
+    "actividad_10": "Completada"
   },
   "metadata": {
     "version": "1.0.0",
     "description": "Estados de actividades de Biocann Cultivo",
-    "updated": "2025-07-17T15:05:32.437Z"
+    "updated": "2025-07-17T15:05:46.892Z"
   }
 }
