@@ -15,11 +15,23 @@ class BiocannPortal {
         // Botón de registrar evento
         const registrarEventoBtn = document.getElementById('registrar-evento-btn');
         if (registrarEventoBtn) {
-            registrarEventoBtn.addEventListener('click', () => this.showForm());
+            registrarEventoBtn.addEventListener('click', () => this.showForm('registrarEvento'));
             registrarEventoBtn.addEventListener('keypress', (e) => {
                 if (e.key === 'Enter' || e.key === ' ') {
                     e.preventDefault();
-                    this.showForm();
+                    this.showForm('registrarEvento');
+                }
+            });
+        }
+
+        // Botón de actividades diarias
+        const actividadesDiariasBtn = document.getElementById('actividades-diarias-btn');
+        if (actividadesDiariasBtn) {
+            actividadesDiariasBtn.addEventListener('click', () => this.showForm('actividadesDiarias'));
+            actividadesDiariasBtn.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    this.showForm('actividadesDiarias');
                 }
             });
         }
@@ -40,17 +52,47 @@ class BiocannPortal {
         window.addEventListener('appinstalled', () => this.handleAppInstalled());
     }
 
-    showForm() {
+    showForm(formType = 'registrarEvento') {
         // URL del formulario de Google desde la configuración
-        const googleFormUrl = window.BIOCANN_CONFIG?.forms?.registrarEvento || 'https://forms.google.com/TU_FORMULARIO_AQUI';
+        const googleFormUrl = window.BIOCANN_CONFIG?.forms?.[formType] || 'https://forms.google.com/TU_FORMULARIO_AQUI';
         
         // Abrir formulario en nueva pestaña
         window.open(googleFormUrl, '_blank', 'noopener,noreferrer');
         
         // Mostrar mensaje de confirmación
-        this.showFormNotification();
+        this.showFormNotification(formType);
         
-        console.log('📝 Abriendo formulario de registro de evento en nueva pestaña');
+        console.log(`📝 Abriendo formulario ${formType} en nueva pestaña`);
+    }
+
+    showFormNotification(formType = 'registrarEvento') {
+        // Texto personalizado según el tipo de formulario
+        const formNames = {
+            'registrarEvento': 'Registro de Evento',
+            'actividadesDiarias': 'Actividades Diarias'
+        };
+        
+        const formName = formNames[formType] || 'Formulario';
+        
+        // Crear notificación temporal
+        const notification = document.createElement('div');
+        notification.className = 'form-notification';
+        notification.innerHTML = `
+            <div class="notification-content">
+                <span class="notification-icon">📝</span>
+                <span class="notification-text">${formName} abierto en nueva pestaña</span>
+                <button class="notification-close" onclick="this.parentElement.parentElement.remove()">×</button>
+            </div>
+        `;
+        
+        document.body.appendChild(notification);
+        
+        // Auto-remover después de 5 segundos
+        setTimeout(() => {
+            if (notification.parentNode) {
+                notification.remove();
+            }
+        }, 5000);
     }
 
     showFormNotification() {

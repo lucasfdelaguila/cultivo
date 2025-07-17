@@ -3,6 +3,7 @@ const BIOCANN_CONFIG = {
     // URLs de formularios
     forms: {
         registrarEvento: 'https://docs.google.com/forms/d/e/1FAIpQLSfe6hrLISqkk_gERxCubZ3DDlG0mg1zduODl8aewEeqrHB4ow/viewform',
+        actividadesDiarias: 'https://docs.google.com/forms/d/e/1FAIpQLSf1_bZ2M4a8T_4k8BSCYAWOlJn5CNTbgtcSLZLH9hCQ9ql5aA/viewform?usp=sharing&ouid=116634953892944823556',
         // Agregar más formularios aquí cuando sea necesario
     },
     
