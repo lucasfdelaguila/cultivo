@@ -7,6 +7,7 @@ const BIOCANN_CONFIG = {
         incidencias: 'https://docs.google.com/forms/d/e/1FAIpQLSfQYX6ovvs_0knd3M0FqxGY4ZqzMRMjAgRo3k82TuvIiru2oA/viewform?usp=dialog',
         inventarioHerramientas: 'https://docs.google.com/spreadsheets/d/1qK1LW1pI1YWcZFC9ti92_nC0DpJzDkc6AszFrzw3ISI/edit?usp=sharing',
         sugerencias: 'https://docs.google.com/forms/d/e/1FAIpQLSdmM13A3_XIP2msI7ab0DIaLOcGnUDbR4-9fPZp9EU0Rnce7Q/viewform?usp=header',
+        riego: 'https://docs.google.com/forms/d/e/1FAIpQLScaUhjc037BEUK2pbMhuNiGeyIdsPvGwMfSOVugjqF5VzigZg/viewform?usp=dialog',
         // Agregar más formularios aquí cuando sea necesario
     },
     

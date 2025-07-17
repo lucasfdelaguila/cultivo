@@ -309,6 +309,18 @@ class BiocannPortal {
             });
         }
 
+        // Botón de riego (sección Cultivo)
+        const riegoBtn = document.getElementById('riego-btn');
+        if (riegoBtn) {
+            riegoBtn.addEventListener('click', () => this.showForm('riego'));
+            riegoBtn.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    this.showForm('riego');
+                }
+            });
+        }
+
         // Botón de actividades diarias
         const actividadesDiariasBtn = document.getElementById('actividades-diarias-btn');
         if (actividadesDiariasBtn) {
@@ -403,7 +415,8 @@ class BiocannPortal {
             'actividadesDiarias': 'Actividades Diarias',
             'incidencias': 'Registro de Incidencias',
             'inventarioHerramientas': 'Inventario de Herramientas',
-            'sugerencias': 'Sugerencias'
+            'sugerencias': 'Sugerencias',
+            'riego': 'Registro de Riegos'
         };
         
         const formName = formNames[formType] || 'Formulario';
