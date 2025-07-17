@@ -27,26 +27,52 @@
     <div class="app-container">
         <!-- Header -->
         <header class="app-header">
-            <div class="logo-container">
-                <h1 class="app-title">Biocann - Cultivo</h1>
+            <div class="header-content">
+                <div class="logo-container">
+                    <h1 class="app-title">Biocann - Cultivo</h1>
+                </div>
+                
+                <!-- Botonera principal -->
+                <nav class="main-nav">
+                    <button class="nav-button active" data-section="registros">
+                        <span class="nav-icon">📋</span>
+                        <span class="nav-text">Registros</span>
+                    </button>
+                    <button class="nav-button" data-section="cultivo">
+                        <span class="nav-icon">🌱</span>
+                        <span class="nav-text">Cultivo</span>
+                    </button>
+                    <button class="nav-button" data-section="actividades">
+                        <span class="nav-icon">📅</span>
+                        <span class="nav-text">Actividades</span>
+                    </button>
+                </nav>
+                
+                <!-- Botones de utilidad -->
+                <div class="utility-buttons">
+                    <button id="install-button" class="install-button" style="display: none;">
+                        <span class="button-icon">📱</span>
+                        <span class="button-text">Instalar</span>
+                    </button>
+                    <button id="session-info-button" class="session-button" style="display: none;">
+                        <span class="button-icon">🔐</span>
+                        <span class="button-text">Sesión</span>
+                    </button>
+                    <button id="logout-button" class="logout-button" style="display: none;">
+                        <span class="button-icon">🚪</span>
+                        <span class="button-text">Salir</span>
+                    </button>
+                </div>
             </div>
-            <button id="install-button" class="install-button" style="display: none;">
-                <span class="button-icon">📱</span>
-                <span class="button-text">Instalar App</span>
-            </button>
         </header>
 
         <!-- Main Content -->
         <main class="main-content">
-            <!-- Dashboard View -->
-            <div id="dashboard-view" class="portal-grid">
+            <!-- Sección Registros -->
+            <div id="registros-section" class="content-section active">
                 <div class="portal-section">
                     <h2 class="section-title">Registros</h2>
                     <div class="button-grid">
-                        <button class="portal-button" id="registrar-evento-btn">
-                            <span class="button-icon">📝</span>
-                            <span class="button-text">Registrar Evento</span>
-                        </button>
                         <button class="portal-button" id="actividades-diarias-btn">
                             <span class="button-icon">📅</span>
                             <span class="button-text">Actividades Diarias</span>
@@ -67,7 +93,43 @@
                 </div>
             </div>
 
+            <!-- Sección Cultivo -->
+            <div id="cultivo-section" class="content-section">
+                <div class="portal-section">
+                    <h2 class="section-title">Cultivo</h2>
+                    <div class="button-grid">
+                        <button class="portal-button" id="registrar-evento-btn">
+                            <span class="button-icon">📝</span>
+                            <span class="button-text">Registrar Evento</span>
+                        </button>
+                        <!-- Aquí se pueden agregar más botones específicos de cultivo -->
+                    </div>
+                </div>
+            </div>
 
+            <!-- Sección Actividades -->
+            <div id="actividades-section" class="content-section">
+                <div class="portal-section">
+                    <h2 class="section-title">Actividades</h2>
+                    
+                    <!-- Controles de sincronización -->
+                    <div class="sync-controls">
+                        <button id="sync-actividades-btn" class="sync-button">
+                            <span class="button-icon">🔄</span>
+                            <span class="button-text">Sincronizar</span>
+                        </button>
+                        <div id="sync-status" class="sync-status">
+                            <span class="status-icon">⏳</span>
+                            <span class="status-text">Cargando actividades...</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Contenedor de tarjetas de actividades -->
+                    <div id="actividades-container" class="actividades-grid">
+                        <!-- Las tarjetas se cargarán dinámicamente aquí -->
+                    </div>
+                </div>
+            </div>
         </main>
 
         <!-- Footer -->
@@ -76,8 +138,29 @@
         </footer>
     </div>
 
+    <!-- Modal de autenticación -->
+    <div id="auth-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Acceso Restringido</h3>
+                <button class="modal-close" id="close-auth-modal">×</button>
+            </div>
+            <div class="modal-body">
+                <p>Esta sección requiere autenticación.</p>
+                <div class="password-input-container">
+                    <input type="password" id="password-input" placeholder="Ingrese la contraseña" class="password-input">
+                    <button id="submit-password" class="submit-button">Acceder</button>
+                </div>
+                <div id="password-error" class="error-message" style="display: none;">
+                    Contraseña incorrecta
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Scripts -->
     <script src="config.js"></script>
+    <script src="config.local.js"></script>
     <script src="app.js"></script>
     <script src="sw-register.js"></script>
 </body>

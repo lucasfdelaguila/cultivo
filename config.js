@@ -10,6 +10,27 @@ const BIOCANN_CONFIG = {
         // Agregar más formularios aquí cuando sea necesario
     },
     
+    // Configuración de actividades
+    actividades: {
+        googleSheetUrl: 'https://docs.google.com/spreadsheets/d/1wcHncke8jdChfmcG-RjuOdZdSY0awN5Acg106WlO0Mw/edit?gid=0#gid=0',
+        sheetName: 'ACTUAL',
+        estados: ['Pendiente', 'En proceso', 'Completada', 'Bloqueada'],
+        estadosColores: {
+            'Pendiente': '#00d4aa',
+            'En proceso': '#ffa500',
+            'Completada': '#4caf50',
+            'Bloqueada': '#ff6b6b'
+        }
+    },
+    
+    // Configuración de GitHub API
+    github: {
+        token: 'YOUR_GITHUB_TOKEN_HERE', // Reemplazar con token real
+        repo: 'lucasfdelaguila/cultivo',
+        branch: 'main',
+        estadosFile: 'actividades-estados.json'
+    },
+    
     // Configuración de la app
     app: {
         name: 'Biocann - Cultivo',
