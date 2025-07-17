@@ -372,7 +372,7 @@ class BiocannPortal {
         // Botón de sincronizar actividades
         const syncActividadesBtn = document.getElementById('sync-actividades-btn');
         if (syncActividadesBtn) {
-            syncActividadesBtn.addEventListener('click', () => this.actividadesManager.loadActividades());
+            syncActividadesBtn.addEventListener('click', () => this.actividadesManager.forceSync());
         }
 
         // Detectar cambios de conectividad
@@ -669,6 +669,8 @@ class ActividadesManager {
         this.estados = {};
         this.isLoading = false;
         this.localStorageKey = 'biocann_actividades_estados';
+        this.lastSyncKey = 'biocann_actividades_last_sync';
+        this.syncInterval = null;
     }
 
     async loadActividades() {
@@ -678,11 +680,14 @@ class ActividadesManager {
         this.updateSyncStatus('⏳ Sincronizando...', 'loading');
         
         try {
-            // Cargar estados desde localStorage (cambios inmediatos)
+            // Cargar estados desde localStorage
             this.loadEstadosFromLocalStorage();
             
-            // Cargar datos de Google Sheets (solo tareas, no estados)
+            // Cargar datos de Google Sheets
             await this.loadDataFromGoogleSheets();
+            
+            // Sincronización automática con GitHub
+            await this.syncWithGitHub();
             
             // Renderizar actividades
             this.renderActividades();
@@ -693,8 +698,8 @@ class ActividadesManager {
                 this.updateSyncStatus('', '');
             }, 3000);
             
-            // Sincronizar con GitHub en background (sin bloquear la UI)
-            this.syncWithGitHubInBackground();
+            // Iniciar sincronización periódica
+            this.startPeriodicSync();
             
         } catch (error) {
             console.error('Error al cargar actividades:', error);
@@ -728,17 +733,157 @@ class ActividadesManager {
         }
     }
 
-    async syncWithGitHubInBackground() {
+    getLastSyncTime() {
         try {
-            // Cargar estados guardados desde GitHub para comparar
-            await this.loadEstadosFromGitHub();
-            
-            // Guardar estados actuales en GitHub
-            await this.saveEstadosToGitHub();
-            
-            console.log('🔄 Sincronización con GitHub completada en background');
+            const lastSync = localStorage.getItem(this.lastSyncKey);
+            return lastSync ? new Date(lastSync) : null;
         } catch (error) {
-            console.error('Error en sincronización con GitHub (background):', error);
+            console.error('Error al obtener último sync:', error);
+            return null;
+        }
+    }
+
+    setLastSyncTime() {
+        try {
+            localStorage.setItem(this.lastSyncKey, new Date().toISOString());
+        } catch (error) {
+            console.error('Error al guardar último sync:', error);
+        }
+    }
+
+    async syncWithGitHub() {
+        try {
+            // Cargar estados desde GitHub
+            const githubEstados = await this.loadEstadosFromGitHub();
+            
+            if (githubEstados && Object.keys(githubEstados).length > 0) {
+                const lastSync = this.getLastSyncTime();
+                const githubTimestamp = await this.getGitHubLastUpdate();
+                
+                // Si no hay sync previo o GitHub tiene cambios más recientes
+                if (!lastSync || (githubTimestamp && githubTimestamp > lastSync)) {
+                    console.log('🔄 Detectados cambios en GitHub, actualizando...');
+                    
+                    // Contar cambios
+                    const changes = this.countChanges(this.estados, githubEstados);
+                    
+                    if (changes > 0) {
+                        // Actualizar estados locales
+                        this.estados = { ...this.estados, ...githubEstados };
+                        this.saveEstadosToLocalStorage();
+                        
+                        // Mostrar notificación de cambios
+                        this.showSyncNotification(changes);
+                        
+                        console.log(`✅ ${changes} cambios sincronizados desde GitHub`);
+                    }
+                } else {
+                    console.log('✅ Estados locales están actualizados');
+                }
+            }
+            
+            // Guardar timestamp de sincronización
+            this.setLastSyncTime();
+            
+        } catch (error) {
+            console.error('Error en sincronización con GitHub:', error);
+        }
+    }
+
+    async getGitHubLastUpdate() {
+        try {
+            const config = window.BIOCANN_CONFIG.github;
+            const url = `https://api.github.com/repos/${config.repo}/contents/${config.estadosFile}`;
+            
+            const response = await fetch(url, {
+                headers: {
+                    'Authorization': `token ${config.token}`,
+                    'Accept': 'application/vnd.github.v3+json'
+                }
+            });
+            
+            if (response.ok) {
+                const data = await response.json();
+                const content = JSON.parse(atob(data.content));
+                return content.lastUpdate ? new Date(content.lastUpdate) : null;
+            }
+        } catch (error) {
+            console.error('Error al obtener timestamp de GitHub:', error);
+        }
+        return null;
+    }
+
+    countChanges(localEstados, githubEstados) {
+        let changes = 0;
+        for (const [key, value] of Object.entries(githubEstados)) {
+            if (localEstados[key] !== value) {
+                changes++;
+            }
+        }
+        return changes;
+    }
+
+    showSyncNotification(changes) {
+        const notification = document.createElement('div');
+        notification.className = 'form-notification';
+        notification.innerHTML = `
+            <div class="notification-content">
+                <span class="notification-icon">🔄</span>
+                <span class="notification-text">${changes} cambios sincronizados desde otros dispositivos</span>
+                <button class="notification-close" onclick="this.parentElement.parentElement.remove()">×</button>
+            </div>
+        `;
+        
+        document.body.appendChild(notification);
+        
+        setTimeout(() => {
+            if (notification.parentNode) {
+                notification.remove();
+            }
+        }, 5000);
+    }
+
+    startPeriodicSync() {
+        // Limpiar intervalo anterior si existe
+        if (this.syncInterval) {
+            clearInterval(this.syncInterval);
+        }
+        
+        // Sincronizar cada 5 minutos
+        this.syncInterval = setInterval(async () => {
+            console.log('🔄 Sincronización periódica...');
+            await this.syncWithGitHub();
+        }, 5 * 60 * 1000); // 5 minutos
+    }
+
+    stopPeriodicSync() {
+        if (this.syncInterval) {
+            clearInterval(this.syncInterval);
+            this.syncInterval = null;
+        }
+    }
+
+    // Función para sincronización manual
+    async forceSync() {
+        this.updateSyncStatus('⏳ Sincronizando manualmente...', 'loading');
+        
+        try {
+            await this.syncWithGitHub();
+            this.renderActividades(); // Re-renderizar para mostrar cambios
+            
+            this.updateSyncStatus('✅ Sincronización manual completada', 'success');
+            
+            setTimeout(() => {
+                this.updateSyncStatus('', '');
+            }, 3000);
+            
+        } catch (error) {
+            console.error('Error en sincronización manual:', error);
+            this.updateSyncStatus('❌ Error en sincronización manual', 'error');
+            
+            setTimeout(() => {
+                this.updateSyncStatus('', '');
+            }, 5000);
         }
     }
 
@@ -757,8 +902,7 @@ class ActividadesManager {
             if (response.ok) {
                 const data = await response.json();
                 const content = JSON.parse(atob(data.content));
-                // Solo usar para comparar, no sobrescribir estados locales
-                console.log('✅ Estados cargados desde GitHub (solo para comparar)');
+                console.log('✅ Estados cargados desde GitHub');
                 return content.estados || {};
             } else {
                 console.log('⚠️ No se encontró archivo de estados en GitHub');
