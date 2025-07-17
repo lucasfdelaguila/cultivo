@@ -300,10 +300,8 @@ class BiocannPortal {
     }
 
     setupAutoUpdate() {
-        // Verificar actualizaciones cada 5 minutos
-        setInterval(() => {
-            this.checkForUpdates();
-        }, 5 * 60 * 1000); // 5 minutos
+        // Verificar actualizaciones una vez al día
+        this.scheduleDailyUpdate();
 
         // Escuchar mensajes del Service Worker
         navigator.serviceWorker.addEventListener('message', (event) => {
@@ -312,12 +310,43 @@ class BiocannPortal {
             }
         });
 
-        // Verificar actualizaciones al cargar la página
+        // Verificar actualizaciones al cargar la página (solo si no se verificó hoy)
         this.checkForUpdates();
     }
 
+    scheduleDailyUpdate() {
+        const now = new Date();
+        const tomorrow = new Date(now);
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        tomorrow.setHours(9, 0, 0, 0); // Verificar a las 9:00 AM del día siguiente
+
+        const timeUntilTomorrow = tomorrow.getTime() - now.getTime();
+
+        // Programar la verificación diaria
+        setTimeout(() => {
+            this.checkForUpdates();
+            // Programar la siguiente verificación diaria
+            setInterval(() => {
+                this.checkForUpdates();
+            }, 24 * 60 * 60 * 1000); // 24 horas
+        }, timeUntilTomorrow);
+    }
+
     checkForUpdates() {
+        // Verificar si ya se revisó hoy
+        const lastCheck = localStorage.getItem('lastUpdateCheck');
+        const today = new Date().toDateString();
+        
+        if (lastCheck === today) {
+            console.log('✅ Ya se verificaron actualizaciones hoy');
+            return;
+        }
+
+        // Marcar que se verificó hoy
+        localStorage.setItem('lastUpdateCheck', today);
+        
         if (navigator.serviceWorker.controller) {
+            console.log('🔄 Verificando actualizaciones...');
             navigator.serviceWorker.controller.postMessage({ type: 'CHECK_UPDATE' });
         }
     }
