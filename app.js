@@ -399,6 +399,10 @@ class BiocannPortal {
         // URL del formulario de Google desde la configuración
         const googleFormUrl = window.BIOCANN_CONFIG?.forms?.[formType] || 'https://forms.google.com/TU_FORMULARIO_AQUI';
         
+        console.log(`🔍 Debug - formType: ${formType}`);
+        console.log(`🔍 Debug - googleFormUrl: ${googleFormUrl}`);
+        console.log(`🔍 Debug - BIOCANN_CONFIG:`, window.BIOCANN_CONFIG);
+        
         // Abrir formulario en nueva pestaña
         window.open(googleFormUrl, '_blank', 'noopener,noreferrer');
         
