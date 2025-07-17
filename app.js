@@ -24,6 +24,12 @@ class BiocannPortal {
             });
         }
 
+        // Botón de instalación manual
+        const manualInstallBtn = document.getElementById('manual-install-button');
+        if (manualInstallBtn) {
+            manualInstallBtn.addEventListener('click', () => this.installApp());
+        }
+
 
 
         // Detectar cambios de conectividad
@@ -91,46 +97,82 @@ class BiocannPortal {
 
     checkInstallPrompt() {
         // Detectar si se puede instalar la PWA
-        let deferredPrompt;
-        
         window.addEventListener('beforeinstallprompt', (e) => {
             e.preventDefault();
-            deferredPrompt = e;
+            window.deferredPrompt = e;
             this.showInstallButton();
         });
     }
 
     showInstallButton() {
-        // Crear botón de instalación si no existe
-        if (!document.getElementById('install-button')) {
-            const installButton = document.createElement('button');
-            installButton.id = 'install-button';
-            installButton.className = 'install-button';
-            installButton.innerHTML = `
-                <span class="button-icon">📱</span>
-                <span class="button-text">Instalar App</span>
-            `;
+        // Mostrar el botón de instalación que ya existe en el HTML
+        const installButton = document.getElementById('install-button');
+        if (installButton) {
+            installButton.style.display = 'flex';
             installButton.addEventListener('click', () => this.installApp());
-            
-            // Insertar en el header
-            const header = document.querySelector('.app-header');
-            header.appendChild(installButton);
         }
     }
 
     installApp() {
         // Lógica de instalación de PWA
         if (window.deferredPrompt) {
+            console.log('🚀 Iniciando instalación de PWA...');
             window.deferredPrompt.prompt();
             window.deferredPrompt.userChoice.then((choiceResult) => {
                 if (choiceResult.outcome === 'accepted') {
                     console.log('✅ Usuario aceptó instalar la app');
+                    this.showInstallSuccess();
                 } else {
                     console.log('❌ Usuario rechazó instalar la app');
                 }
                 window.deferredPrompt = null;
+            }).catch((error) => {
+                console.error('❌ Error durante la instalación:', error);
             });
+        } else {
+            console.log('⚠️ No hay prompt de instalación disponible');
+            this.showManualInstallInstructions();
         }
+    }
+
+    showInstallSuccess() {
+        const notification = document.createElement('div');
+        notification.className = 'form-notification';
+        notification.innerHTML = `
+            <div class="notification-content">
+                <span class="notification-icon">🎉</span>
+                <span class="notification-text">¡App instalada exitosamente!</span>
+                <button class="notification-close" onclick="this.parentElement.parentElement.remove()">×</button>
+            </div>
+        `;
+        
+        document.body.appendChild(notification);
+        
+        setTimeout(() => {
+            if (notification.parentNode) {
+                notification.remove();
+            }
+        }, 5000);
+    }
+
+    showManualInstallInstructions() {
+        const notification = document.createElement('div');
+        notification.className = 'form-notification';
+        notification.innerHTML = `
+            <div class="notification-content">
+                <span class="notification-icon">📱</span>
+                <span class="notification-text">Usa el menú del navegador para instalar la app</span>
+                <button class="notification-close" onclick="this.parentElement.parentElement.remove()">×</button>
+            </div>
+        `;
+        
+        document.body.appendChild(notification);
+        
+        setTimeout(() => {
+            if (notification.parentNode) {
+                notification.remove();
+            }
+        }, 8000);
     }
 
     handleAppInstalled() {
