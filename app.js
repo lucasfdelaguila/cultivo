@@ -36,6 +36,18 @@ class BiocannPortal {
             });
         }
 
+        // Botón de incidencias
+        const incidenciasBtn = document.getElementById('incidencias-btn');
+        if (incidenciasBtn) {
+            incidenciasBtn.addEventListener('click', () => this.showForm('incidencias'));
+            incidenciasBtn.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    this.showForm('incidencias');
+                }
+            });
+        }
+
         // Botón de instalación manual
         const manualInstallBtn = document.getElementById('manual-install-button');
         if (manualInstallBtn) {
@@ -69,7 +81,8 @@ class BiocannPortal {
         // Texto personalizado según el tipo de formulario
         const formNames = {
             'registrarEvento': 'Registro de Evento',
-            'actividadesDiarias': 'Actividades Diarias'
+            'actividadesDiarias': 'Actividades Diarias',
+            'incidencias': 'Registro de Incidencias'
         };
         
         const formName = formNames[formType] || 'Formulario';
