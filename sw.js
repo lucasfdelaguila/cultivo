@@ -124,7 +124,35 @@ self.addEventListener('message', (event) => {
     if (event.data && event.data.type === 'GET_VERSION') {
         event.ports[0].postMessage({ version: CACHE_NAME });
     }
+
+    if (event.data && event.data.type === 'CHECK_UPDATE') {
+        this.checkForUpdates();
+    }
 });
+
+// Función para verificar actualizaciones
+async function checkForUpdates() {
+    try {
+        const response = await fetch('/cultivo/index.html', { cache: 'no-cache' });
+        const newContent = await response.text();
+        
+        // Comparar con el contenido actual
+        const currentContent = await caches.match('/cultivo/index.html');
+        if (currentContent) {
+            const currentText = await currentContent.text();
+            if (newContent !== currentText) {
+                // Hay una actualización disponible
+                self.clients.matchAll().then(clients => {
+                    clients.forEach(client => {
+                        client.postMessage({ type: 'UPDATE_AVAILABLE' });
+                    });
+                });
+            }
+        }
+    } catch (error) {
+        console.error('Error checking for updates:', error);
+    }
+}
 
 // Manejo de errores
 self.addEventListener('error', (event) => {

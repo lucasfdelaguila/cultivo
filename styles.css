@@ -271,19 +271,7 @@ body {
     transform: translateY(-1px);
 }
 
-.install-button.manual {
-    background-color: transparent;
-    color: #ffffff;
-    border-color: #666666;
-    opacity: 0.8;
-}
 
-.install-button.manual:hover {
-    background-color: #ffffff;
-    color: #000000;
-    border-color: #ffffff;
-    opacity: 1;
-}
 
 /* Estilos para mensaje offline */
 .offline-message {

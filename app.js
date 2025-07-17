@@ -8,6 +8,7 @@ class BiocannPortal {
         this.setupEventListeners();
         this.checkInstallPrompt();
         this.setupOfflineDetection();
+        this.setupAutoUpdate();
         console.log('🚀 Biocann - Cultivo Portal iniciado');
     }
 
@@ -72,11 +73,7 @@ class BiocannPortal {
             });
         }
 
-        // Botón de instalación manual
-        const manualInstallBtn = document.getElementById('manual-install-button');
-        if (manualInstallBtn) {
-            manualInstallBtn.addEventListener('click', () => this.installApp());
-        }
+
 
 
 
@@ -299,6 +296,55 @@ class BiocannPortal {
         const message = document.getElementById('offline-message');
         if (message) {
             message.remove();
+        }
+    }
+
+    setupAutoUpdate() {
+        // Verificar actualizaciones cada 5 minutos
+        setInterval(() => {
+            this.checkForUpdates();
+        }, 5 * 60 * 1000); // 5 minutos
+
+        // Escuchar mensajes del Service Worker
+        navigator.serviceWorker.addEventListener('message', (event) => {
+            if (event.data && event.data.type === 'UPDATE_AVAILABLE') {
+                this.showUpdateNotification();
+            }
+        });
+
+        // Verificar actualizaciones al cargar la página
+        this.checkForUpdates();
+    }
+
+    checkForUpdates() {
+        if (navigator.serviceWorker.controller) {
+            navigator.serviceWorker.controller.postMessage({ type: 'CHECK_UPDATE' });
+        }
+    }
+
+    showUpdateNotification() {
+        // Crear notificación de actualización
+        if (!document.getElementById('update-notification')) {
+            const notification = document.createElement('div');
+            notification.id = 'update-notification';
+            notification.className = 'update-notification';
+            notification.innerHTML = `
+                <div class="update-content">
+                    <span class="update-icon">🔄</span>
+                    <span class="update-text">Nueva versión disponible</span>
+                    <button class="update-button" onclick="window.location.reload()">
+                        Actualizar
+                    </button>
+                </div>
+            `;
+            document.body.appendChild(notification);
+
+            // Auto-ocultar después de 30 segundos
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.remove();
+                }
+            }, 30000);
         }
     }
 
