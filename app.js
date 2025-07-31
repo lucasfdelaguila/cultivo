@@ -321,6 +321,18 @@ class BiocannPortal {
             });
         }
 
+        // Botón de fertirriego (sección Cultivo)
+        const fertirriegoBtn = document.getElementById('fertirriego-btn');
+        if (fertirriegoBtn) {
+            fertirriegoBtn.addEventListener('click', () => this.openFertirriegoForm());
+            fertirriegoBtn.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    this.openFertirriegoForm();
+                }
+            });
+        }
+
         // Botón de actividades diarias
         const actividadesDiariasBtn = document.getElementById('actividades-diarias-btn');
         if (actividadesDiariasBtn) {
@@ -420,7 +432,8 @@ class BiocannPortal {
             'incidencias': 'Registro de Incidencias',
             'inventarioHerramientas': 'Inventario de Herramientas',
             'sugerencias': 'Sugerencias',
-            'riego': 'Registro de Riegos'
+            'riego': 'Registro de Riegos',
+            'fertirriego': 'Registro de Fertirriego'
         };
         
         const formName = formNames[formType] || 'Formulario';
@@ -445,6 +458,8 @@ class BiocannPortal {
             }
         }, 5000);
     }
+
+
 
     addClickEffect(button) {
         button.classList.add('clicked');
