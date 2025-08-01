@@ -333,6 +333,30 @@ class BiocannPortal {
             });
         }
 
+        // Botón de registro de podas (sección Cultivo)
+        const podasBtn = document.getElementById('podas-btn');
+        if (podasBtn) {
+            podasBtn.addEventListener('click', () => this.openPodasForm());
+            podasBtn.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    this.openPodasForm();
+                }
+            });
+        }
+
+        // Botón de registro de esquejado (sección Cultivo)
+        const esquejadoBtn = document.getElementById('esquejado-btn');
+        if (esquejadoBtn) {
+            esquejadoBtn.addEventListener('click', () => this.openEsquejadoForm());
+            esquejadoBtn.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    this.openEsquejadoForm();
+                }
+            });
+        }
+
         // Botón de actividades diarias
         const actividadesDiariasBtn = document.getElementById('actividades-diarias-btn');
         if (actividadesDiariasBtn) {
@@ -459,7 +483,95 @@ class BiocannPortal {
         }, 5000);
     }
 
+    openFertirriegoForm() {
+        // URL del formulario de fertilización de Google Forms
+        const fertirriegoFormUrl = 'https://docs.google.com/forms/d/e/1FAIpQLSeLYWyMiE1kyTiosDtVg2Tbk9IWOk7h5D4AVBO2VfGs-CP0wg/viewform?usp=header';
+        
+        // Abrir formulario en nueva pestaña
+        window.open(fertirriegoFormUrl, '_blank', 'noopener,noreferrer');
+        
+        // Mostrar notificación
+        const notification = document.createElement('div');
+        notification.className = 'form-notification';
+        notification.innerHTML = `
+            <div class="notification-content">
+                <span class="notification-icon">🌿</span>
+                <span class="notification-text">Formulario de Fertirriego abierto en nueva pestaña</span>
+                <button class="notification-close" onclick="this.parentElement.parentElement.remove()">×</button>
+            </div>
+        `;
+        
+        document.body.appendChild(notification);
+        
+        // Auto-remover después de 5 segundos
+        setTimeout(() => {
+            if (notification.parentNode) {
+                notification.remove();
+            }
+        }, 5000);
+        
+        console.log('🌿 Abriendo formulario de Fertirriego en nueva pestaña');
+    }
 
+    openPodasForm() {
+        // URL del formulario de registro de podas de Google Forms
+        const podasFormUrl = 'https://docs.google.com/forms/d/e/1FAIpQLSeVjDxsV9KAeBUEPFnxr67jeVkCssn8XzXd2AsvejYWIWsBaw/viewform?usp=header';
+        
+        // Abrir formulario en nueva pestaña
+        window.open(podasFormUrl, '_blank', 'noopener,noreferrer');
+        
+        // Mostrar notificación
+        const notification = document.createElement('div');
+        notification.className = 'form-notification';
+        notification.innerHTML = `
+            <div class="notification-content">
+                <span class="notification-icon">✂️</span>
+                <span class="notification-text">Formulario de Registro de Podas abierto en nueva pestaña</span>
+                <button class="notification-close" onclick="this.parentElement.parentElement.remove()">×</button>
+            </div>
+        `;
+        
+        document.body.appendChild(notification);
+        
+        // Auto-remover después de 5 segundos
+        setTimeout(() => {
+            if (notification.parentNode) {
+                notification.remove();
+            }
+        }, 5000);
+        
+        console.log('✂️ Abriendo formulario de Registro de Podas en nueva pestaña');
+    }
+
+    openEsquejadoForm() {
+        // URL del formulario de registro de esquejado de Google Forms
+        const esquejadoFormUrl = 'https://docs.google.com/forms/d/e/1FAIpQLSdllN9KpCrWuAEWX56Cql_t0T3dsxqtwijGUg7HDnhUJKRNHg/viewform?usp=header';
+        
+        // Abrir formulario en nueva pestaña
+        window.open(esquejadoFormUrl, '_blank', 'noopener,noreferrer');
+        
+        // Mostrar notificación
+        const notification = document.createElement('div');
+        notification.className = 'form-notification';
+        notification.innerHTML = `
+            <div class="notification-content">
+                <span class="notification-icon">🌱</span>
+                <span class="notification-text">Formulario de Registro de Esquejado abierto en nueva pestaña</span>
+                <button class="notification-close" onclick="this.parentElement.parentElement.remove()">×</button>
+            </div>
+        `;
+        
+        document.body.appendChild(notification);
+        
+        // Auto-remover después de 5 segundos
+        setTimeout(() => {
+            if (notification.parentNode) {
+                notification.remove();
+            }
+        }, 5000);
+        
+        console.log('🌱 Abriendo formulario de Registro de Esquejado en nueva pestaña');
+    }
 
     addClickEffect(button) {
         button.classList.add('clicked');
